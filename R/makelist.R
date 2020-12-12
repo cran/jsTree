@@ -52,10 +52,10 @@ makeList <- function(x,tooltips){
 }
 
 #' @importFrom data.table rbindlist
-nest <- function(l, root='root', nodestate=NULL, tooltips=NA){
+nest <- function(l, root='root', nodestate=NULL, tooltips=NA, sep='/',sep_fixed = TRUE){
   
   df <- data.frame(V0=root,
-                   data.table::rbindlist(lapply(strsplit(l,'/'),
+                   data.table::rbindlist(lapply(strsplit(l,sep,fixed=sep_fixed),
                                      function(x) as.data.frame(t(x),stringsAsFactors = FALSE)),
                                     fill=TRUE),
              stringsAsFactors = FALSE)
@@ -74,5 +74,10 @@ nest <- function(l, root='root', nodestate=NULL, tooltips=NA){
   
   if(all(df[,1]==df[,2])) df[,2] <- NULL
   
-  makeList(df,tooltips)
+  ret <- makeList(df,tooltips)
+  
+  if(ret[[1]]$text=='.')
+    ret <- ret[[1]]$children
+  
+  ret
 } 

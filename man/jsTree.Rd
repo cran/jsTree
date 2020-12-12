@@ -4,11 +4,29 @@
 \alias{jsTree}
 \title{Htmlwidget for the jsTree Javascript library}
 \usage{
-jsTree(obj, tooltips = NULL, nodestate = NULL, ..., width = NULL,
-  height = NULL, elementId = NULL)
+jsTree(
+  obj,
+  sep = "/",
+  sep_fixed = TRUE,
+  core = NULL,
+  tooltips = NULL,
+  nodestate = NULL,
+  ...,
+  width = NULL,
+  height = NULL,
+  elementId = NULL,
+  file = tempfile(pattern = "jstree-", fileext = ".html"),
+  browse = TRUE
+)
 }
 \arguments{
 \item{obj}{character, vector of directory tree}
+
+\item{sep}{character, separator for \code{'obj'} which defines the hierarchy, Default: \code{'/'}.}
+
+\item{sep_fixed}{boolean, to treat the sep character(s) as fixed when seperating, Default: TRUE.}
+
+\item{core}{list, additional parameters to pass to core of jsTree, default: NULL}
 
 \item{tooltips}{character, named vector of tooltips for elements in the tree, Default: NULL}
 
@@ -21,21 +39,42 @@ jsTree(obj, tooltips = NULL, nodestate = NULL, ..., width = NULL,
 string and have \code{'px'} appended.}
 
 \item{elementId}{The input slot that will be used to access the element.}
+
+\item{file}{character, html filename to save output to,
+Default: tempfile(pattern = 'jstree-',fileext = '.html').}
+
+\item{browse}{whether to open a browser to view the html, Default: TRUE}
 }
 \description{
 Htmlwidget for the jsTree Javascript library
 }
 \details{
-parameters in ... that can be passed on to the vcs package are: 
-remote_repo a character object that defines the remote user/repository,
-remote_branch character object that defines the branch of remote_repo (ussually 'master'),
-vcs character object that defines for vcs which version control system to attach (github, bitbucket, svn)
-preview.search character object that defines a search term to initialize to in the preview pane searchbox
+valid core objects can be found in the jsTree javascript library api
+ \href{https://www.jstree.com/api/}{homepage}. 
+ 
+All objects that are children of 'jstree.defaults.core' are valid inputs, 
+except 'jstree.defaults.core.data' which is constructed internally by the R function call.
+The R list object is translated internally into a valid javascript object.
 
-if remote_repo is given a preview pane of a selected file from the tree will appear to the right of the tree.
-preview.search is only relevant for vcs in (github,bitbucket) where file previewing is available
+parameters in ... that can be passed on to the vcs package are:
 
-For more information on the vcs package go to \url{https://github.com/metrumresearchgroup/vcs}
+\strong{remote_repo} a character object that defines the remote user/repository
+
+\strong{remote_branch} character object that defines the branch of remote_repo (ussually 'master')
+
+\strong{vcs} character object that defines for vcs which version control system to attach
+ (github, bitbucket, svn)
+ 
+\strong{preview.search} character object that defines a search term to initialize to in the
+ preview pane searchbox
+
+if \strong{remote_repo} is given a preview pane of a selected file from the tree will appear to 
+the right of the tree 
+
+\strong{preview.search} is only relevant for vcs in (github,bitbucket) where file
+ previewing is available
+
+For more information on the vcs package go to \url{https://github.com/yonicd/vcs}
 }
 \examples{
 if(interactive()){
@@ -46,6 +85,9 @@ data(state_bird)
 #collapse columns to text (with sep "/")
 nested_string <- apply(states,1,paste,collapse='/')
 jsTree(nested_string)
+
+#pass additional parameters to core
+jsTree(nested_string,core=list(multiple=FALSE))
 
 # Add tooltips to state names with the state bird 
 jsTree(nested_string,tooltips = state_bird)
